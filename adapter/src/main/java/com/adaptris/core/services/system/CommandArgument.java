@@ -17,6 +17,7 @@
 package com.adaptris.core.services.system;
 
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.ServiceException;
 
 /**
  * Interface for providing command line arguments to the {@link SystemCommandExecutorService}
@@ -27,6 +28,7 @@ public interface CommandArgument {
   /**
    * @param msg the {@link com.adaptris.core.AdaptrisMessage}
    * @return the value for this argument
+   * @throws ServiceException 
    */
-  public String retrieveValue(AdaptrisMessage msg);
+  public String retrieveValue(AdaptrisMessage msg) throws ServiceException;
 }

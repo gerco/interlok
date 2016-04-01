@@ -34,6 +34,7 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.ServiceException;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -75,7 +76,7 @@ public class DefaultCommandBuilder implements CommandBuilder {
     setArguments(new ArrayList<CommandArgument>());
   }
 
-  public CommandLine createCommandLine(AdaptrisMessage msg) {
+  public CommandLine createCommandLine(AdaptrisMessage msg) throws ServiceException {
     CommandLine commandLine = new CommandLine(getExecutablePath());
     for (CommandArgument argument : getArguments()) {
       commandLine.addArgument(argument.retrieveValue(msg), quoteHandling());

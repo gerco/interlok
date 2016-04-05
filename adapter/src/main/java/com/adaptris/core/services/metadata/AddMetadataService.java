@@ -31,6 +31,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.lms.FileBackedMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -46,6 +47,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * <ul>
  * <li>$UNIQUE_ID$ - add the messages unique id as metadata</li>
  * <li>$MSG_SIZE$ - add the messages current size as metadata</li>
+ * <li>$MSG_FILE$ - add the message temporary file name as metadata (file backed messages only)</li>
  * </ul>
  * </p>
  * 
@@ -61,6 +63,7 @@ public class AddMetadataService extends ServiceImp {
 
   private static final String UNIQUE_ID_MNENOMIC = "$UNIQUE_ID$";
   private static final String FILE_SIZE_MNEMONIC = "$MSG_SIZE$";
+  private static final String FILE_NAME_MNEMONIC = "$MSG_FILE$";
 
   private static enum MethodHandler {
     UniqueId {
@@ -74,18 +77,28 @@ public class AddMetadataService extends ServiceImp {
       String getValue(AdaptrisMessage msg) {
         return "" + msg.getSize();
       }
+    },
+    MessageFile {
+      @Override
+      String getValue(AdaptrisMessage msg) {
+        if(msg instanceof FileBackedMessage) {
+          return ((FileBackedMessage)msg).currentSource().getAbsolutePath();
+        } else {
+          return "Not a file backed message";
+        }
+      }
     };
     abstract String getValue(AdaptrisMessage msg) throws ServiceException;
   }
 
   private static final String[] HANDLER_STRING_ARRAY =
   {
-      UNIQUE_ID_MNENOMIC, FILE_SIZE_MNEMONIC
+      UNIQUE_ID_MNENOMIC, FILE_SIZE_MNEMONIC, FILE_NAME_MNEMONIC
   };
 
   private static final MethodHandler[] HANDLER_ARRAY =
   {
-      MethodHandler.UniqueId, MethodHandler.MessageSize
+      MethodHandler.UniqueId, MethodHandler.MessageSize, MethodHandler.MessageFile
   };
 
   private static final Map<String, MethodHandler> HANDLERS;

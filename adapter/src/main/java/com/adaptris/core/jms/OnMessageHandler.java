@@ -34,14 +34,24 @@ import com.adaptris.core.CoreException;
  * class to be used by both polling and listening imps. This class is not marshalled or configurable.
  * </p>
  */
-class OnMessageHandler {
+public class OnMessageHandler {
 
   private transient Logger logR = null;
 
   private transient JmsActorConfig onMsgConfig;
 
   private enum AcknowledgeCommitOrRollBack {
+    ManagedTransaction {
+      @Override
+      boolean maybe(JmsActorConfig c) throws JMSException {
+        return c.isManagedTransaction();
+      }
 
+      @Override
+      void perform(JmsActorConfig c, Message m) throws JMSException {
+        c.currentLogger().trace("Managed transaction, not doing anything");
+      }
+    },
     CommitPerhapsRollback {
       @Override
       boolean maybe(JmsActorConfig c) throws JMSException {
@@ -100,7 +110,7 @@ class OnMessageHandler {
    *
    * @param cfg the <code>OnMessageConfig</code> to use
    */
-  OnMessageHandler(JmsActorConfig cfg) throws CoreException {
+  public OnMessageHandler(JmsActorConfig cfg) throws CoreException {
     this();
     if (cfg == null) {
       throw new IllegalArgumentException("Null param");
@@ -137,7 +147,7 @@ class OnMessageHandler {
    * be called.
    * </p>
    */
-  void onMessage(Message msg) {
+  public void onMessage(Message msg) {
     AdaptrisMessage adaptrisMessage = null;
     AdaptrisMessageListener msgListener = onMsgConfig.configuredMessageListener();
     try {

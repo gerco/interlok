@@ -174,4 +174,9 @@ public class AggregatingJmsConsumeService extends AggregatingConsumeServiceImpl<
     this.connection = connection;
   }
 
+  @Override
+  public boolean isManagedTransaction() {
+    return false;
+  }
+
 }

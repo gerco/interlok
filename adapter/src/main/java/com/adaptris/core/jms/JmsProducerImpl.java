@@ -606,6 +606,11 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
   public long rollbackTimeout() {
     return rollbackTimeout;
   }
+  
+  @Override
+  public boolean isManagedTransaction() {
+    return false;
+  }
 
   protected boolean captureOutgoingMessageDetails() {
     return getCaptureOutgoingMessageDetails() != null ? getCaptureOutgoingMessageDetails()
